@@ -64,7 +64,7 @@ contract KNBGame is VRFConsumerBaseV2, Ownable {
     }
 
     /** Property:
-        0 - stone
+        0 - rock
         1 - scissors
         2 - paper
     **/

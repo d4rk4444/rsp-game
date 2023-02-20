@@ -18,7 +18,7 @@ module.exports = {
       },
     },
     etherscan: {
-      apiKey: '',
+      apiKey: process.env.API_BSCSCAN,
     },
     paths: {
         sources: "./contracts",
