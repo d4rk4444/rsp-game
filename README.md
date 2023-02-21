@@ -23,7 +23,7 @@ git clone https://github.com/d4rk4444/rsp-game.git
 ```
 2) Установите зависимости
 ```bash
-cd /rps-game
+cd /rsp-game
 npm i
 ```
 3) Запустите проект
