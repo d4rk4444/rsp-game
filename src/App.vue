@@ -10,9 +10,9 @@
     </div>
     <div v-if="!gameLive" class="group">
         <n-space vertical>
-            <n-radio-group v-model:value="valueType" name="radiogroup" default-checked="BUSD">
-            <n-radio v-for="song in types" :key="song.value" :value="song.value" :label="song.label" class="radio" />
-        </n-radio-group>
+            <n-radio-group v-model:value="valueType" name="radiogroup" default-checked="BUSD" class="radio">
+                <n-radio v-for="song in types" :key="song.value" :value="song.value" :label="song.label" />
+            </n-radio-group>
             <n-input-group :style="{ width: '300px' }">
                 <n-select  v-model:value="valueProperty" :options="options" placeholder="property" />
                 <n-input-number v-if="valueType == 0" v-model:value="value" :style="{ width: '300px' }" placeholder="amount bet" step="0.1" min="0.1" max="1">
@@ -40,7 +40,7 @@
             <n-gi>
                 <div class="center">
                     <n-avatar v-if="valueType == 0" class='avatar-value' :size="30" round src="https://cryptologos.cc/logos/bnb-bnb-logo.png"/>
-                    <n-avatar v-else="valueType == 1" class='avatar-value' :size="30" round src="https://cryptologos.cc/logos/binance-usd-busd-logo.png"/>
+                    <n-avatar v-else="valueType == 1" class='avatar-value' :size="30" round src="https://i.pinimg.com/originals/0e/17/8a/0e178afcffbb3ddd459c01466238b17d.png"/>
                     <p>{{ value }}</p>
                     <p v-if="!resultGame" class="status-result">wait...</p>
                 </div>
@@ -63,7 +63,7 @@
     import { NSpace, NInputGroup, NSelect, NInputNumber, NButton, NAlert, NGrid, NGi, NAvatar, NRadioGroup, NRadio } from 'naive-ui'
     import { defineComponent, ref } from "vue";
     import ABI from '../artifacts/contracts/RSPGame.sol/RSPGame.json'
-    import { abiToken } from '../public/abiToken.js'
+    import { abiToken } from '/public/abiToken.js'
 
     export default defineComponent({
         components:{
@@ -84,7 +84,7 @@
             return {
                 web3: null,
                 txnCount: 0,
-                contract: '0x4CF9b49aac773b79d00826b41A08b0f218175b17',
+                contract: '0xc50F92CbB689C7620d2130032ca06987c1AC2Fa6',
                 wallet: null,
                 address: '',
                 valueProperty: ref(null),
@@ -471,7 +471,7 @@
 
     .status-result {
         position: absolute;
-        bottom: 65%;
+        bottom: 50%;
         left: 50%;
         transform: translateX(-50%);
     }
@@ -482,6 +482,7 @@
     }
 
     .radio {
-
+        display: flex;
+        justify-content: center;
     }
 </style>

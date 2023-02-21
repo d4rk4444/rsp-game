@@ -107,7 +107,7 @@ contract RSPGame is VRFConsumerBaseV2, Ownable {
             amountBet: msg.value,
             requestId: requestId,
             isLive: true,
-            winner: 0x0000000000000000000000000000000000000000
+            winner: address(0x0000000000000000000000000000000000000000)
         });
 
         gameNumber++;
@@ -143,7 +143,7 @@ contract RSPGame is VRFConsumerBaseV2, Ownable {
             amountBet: amountBet,
             requestId: requestId,
             isLive: true,
-            winner: 0x0000000000000000000000000000000000000000
+            winner: address(0x0000000000000000000000000000000000000000)
         });
 
         gameNumber++;
@@ -158,7 +158,7 @@ contract RSPGame is VRFConsumerBaseV2, Ownable {
         s_requests[_requestId].randomWords = _randomWords;
 
         uint32 numberGame = s_requests[_requestId].numberGame;
-        GameStatus memory gameStatus = s_games[numberGame];
+        GameStatus storage gameStatus = s_games[numberGame];
         uint fee = gameStatus.amountBet / 100 * feeGame;
         uint8 oracleProperty = uint8(_randomWords[0] % 3);
         uint8 userProperty = gameStatus.userProperty;
