@@ -5,7 +5,7 @@ import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract KNBGame is VRFConsumerBaseV2, Ownable {
+contract RSPGameOld is VRFConsumerBaseV2, Ownable {
     VRFCoordinatorV2Interface COORDINATOR;
     address vrfCoordinator = 0x6A2AAd07396B36Fe02a22b33cf443582f682c82f;
     bytes32 keyHash = 0xd4bb89654db74673a187bd804519e65e3f71a52bc55f11da7601a13dcf505314;

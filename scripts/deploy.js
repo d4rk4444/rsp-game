@@ -1,5 +1,5 @@
 const main = async () => {
-    const gameContractFactory = await hre.ethers.getContractFactory("KNBGame");
+    const gameContractFactory = await hre.ethers.getContractFactory("RSPGame");
     const gameContract = await gameContractFactory.deploy();
     await gameContract.deployed();
     console.log("Contract deployed to:", gameContract.address);

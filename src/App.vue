@@ -10,13 +10,19 @@
     </div>
     <div v-if="!gameLive" class="group">
         <n-space vertical>
+            <n-radio-group v-model:value="valueType" name="radiogroup" default-checked="BUSD">
+            <n-radio v-for="song in types" :key="song.value" :value="song.value" :label="song.label" class="radio" />
+        </n-radio-group>
             <n-input-group :style="{ width: '300px' }">
                 <n-select  v-model:value="valueProperty" :options="options" placeholder="property" />
-                <n-input-number v-model:value="value" :style="{ width: '300px' }" placeholder="amount bet" step="0.1" min="0.1" max="10">
+                <n-input-number v-if="valueType == 0" v-model:value="value" :style="{ width: '300px' }" placeholder="amount bet" step="0.1" min="0.1" max="1">
                     <template #suffix>BNB</template>
                 </n-input-number>
+                <n-input-number v-else="valueType == 1" v-model:value="value" :style="{ width: '300px' }" placeholder="amount bet" step="0.1" min="0.1" max="10">
+                    <template #suffix>BUSD</template>
+                </n-input-number>
             </n-input-group>
-            <n-button @click="play(valueProperty, value)" class='button' color='#333399'>Играть</n-button>
+            <n-button @click="valueType == 0 ? play(valueProperty, value) : approve(valueProperty, value)" class='button' color='#333399'>Играть</n-button>
         </n-space>
     </div>
     <div v-if="gameLive">
@@ -27,13 +33,14 @@
                 <div class="side">
                     <p>bot</p>
                     <img v-if="!botProperty" src="./assets/question.png" alt="Image 1">
-                    <img :class="{ 'img-loss': resultGame === 'win', 'img-win': resultGame === 'loss', 'img-draw': resultGame === 'draw' }" v-if="botProperty"
+                    <img :class="{ 'img-loss': resultGame == 'win', 'img-win': resultGame == 'loss', 'img-draw': resultGame == 'draw' }" v-if="botProperty"
                         :src="`./src/assets/${botProperty}.png`" alt="Image 1">
                 </div>
             </n-gi>
             <n-gi>
                 <div class="center">
-                    <n-avatar class='avatar-value' :size="30" round src="https://cdn.pixabay.com/photo/2021/04/30/16/47/bnb-6219388_1280.png"/>
+                    <n-avatar v-if="valueType == 0" class='avatar-value' :size="30" round src="https://cryptologos.cc/logos/bnb-bnb-logo.png"/>
+                    <n-avatar v-else="valueType == 1" class='avatar-value' :size="30" round src="https://cryptologos.cc/logos/binance-usd-busd-logo.png"/>
                     <p>{{ value }}</p>
                     <p v-if="!resultGame" class="status-result">wait...</p>
                 </div>
@@ -53,9 +60,10 @@
 <script>
     import Web3 from 'web3'
     import { ConnectWalletButton, useMetaMaskWallet } from 'vue-connect-wallet'
-    import { NSpace, NInputGroup, NSelect, NInputNumber, NButton, NAlert, NGrid, NGi, NAvatar } from 'naive-ui'
+    import { NSpace, NInputGroup, NSelect, NInputNumber, NButton, NAlert, NGrid, NGi, NAvatar, NRadioGroup, NRadio } from 'naive-ui'
     import { defineComponent, ref } from "vue";
-    import ABI from '../artifacts/contracts/KNBGame.sol/KNBGame.json'
+    import ABI from '../artifacts/contracts/RSPGame.sol/RSPGame.json'
+    import { abiToken } from '../public/abiToken.js'
 
     export default defineComponent({
         components:{
@@ -68,13 +76,15 @@
             NAlert,
             NGrid,
             NGi,
-            NAvatar
+            NAvatar,
+            NRadioGroup,
+            NRadio
         },
         data() {
             return {
                 web3: null,
                 txnCount: 0,
-                contract: '0xb886623d52A8fE59f1ec57269866957F79773480',
+                contract: '0x4CF9b49aac773b79d00826b41A08b0f218175b17',
                 wallet: null,
                 address: '',
                 valueProperty: ref(null),
@@ -85,6 +95,17 @@
                     { label: 'Ножницы', value: '1' },
                     { label: 'Бумага', value: '2' }
                 ],
+                valueType: ref(null),
+                types: [
+                    {
+                        value: 0,
+                        label: "BNB"
+                    },
+                    {
+                        value: 1,
+                        label: "BUSD"
+                    },
+                ],
                 alertVisible: false,
                 alertTitle: '',
                 alertText: '',
@@ -94,13 +115,14 @@
             }
         },
         async created() {
+            this.valueType = this.types[0].value;
             const wallet = useMetaMaskWallet();
             this.wallet = wallet;
 
             const switchOrAddChain = async() => {
                 wallet.switchOrAddChain(97, {
                     chainName: 'Binance Smart Chain Testnet',
-                    rpcUrls: ['https://bsc-testnet.public.blastapi.io'],
+                    rpcUrls: ['https://data-seed-prebsc-1-s3.binance.org:8545'],
                     nativeCurrency: {
                         name: 'tBNB',
                         symbol: 'tBNB',
@@ -129,7 +151,6 @@
         methods: {
             async connect() {
                 const accounts = await this.wallet.connect();
-                console.log(accounts[0]);
                 if (typeof accounts === "string") {
                     return this.showAlert('error', 'Error', accounts);
                 };
@@ -147,7 +168,7 @@
 
                 setTimeout(() => {
                     this.alertVisible = false
-                }, 5000);
+                }, 2000);
             },
             async timeout(ms) {
                 return new Promise(resolve => {
@@ -176,18 +197,19 @@
                         return this.showAlert('error', 'Error', error.message);
                     }
                 });
-                await this.timeout(15000);
+                await this.timeout(7500);
 
                 while(true) {
                     try {
                         await this.timeout(5000);
-                        const data = await contract.methods.getGameProperty(
+                        const data = await contract.methods.getGameResult(
                             numberGame
                         ).call();
                         this.botProperty = data.oracleProperty;
                         break;
                     } catch (err) {};
                 }
+                await this.timeout(1000);
 
                 while(true) {
                     await contract.getPastEvents("newWin", {
@@ -217,23 +239,27 @@
                     if (this.resultGame) break;
                 }
             },
-            async checkTransactionStatus(hash) {
+            async checkTransactionStatus(hash, typeTX) {
                 while(true) {
                     const receipt = await this.web3.eth.getTransactionReceipt(hash);
                     if (receipt) {
                         if (receipt.status == true) {
-                            this.showAlert('success', 'Transaction success', `https://testnet.bscscan.com/tx/${hash}`);
-                            this.txnCount = 0;
-                            this.gameLive = true;
-                            await this.timeout(1000);
-                            await this.startGame(receipt.blockNumber, receipt.from);
+                            if (typeTX == 'approve') {
+                                this.showAlert('success', 'Approve success', `https://testnet.bscscan.com/tx/${hash}`);
+                                this.txnCount = 0;
+                            } else if (typeTX == 'game') {
+                                this.showAlert('success', 'Transaction success', `https://testnet.bscscan.com/tx/${hash}`);
+                                this.txnCount = 0;
+                                this.gameLive = true;
+                                await this.startGame(receipt.blockNumber, receipt.from);
+                            }
                             break;
                         } else if (receipt.status == false) {
                             this.showAlert('error', 'Error', 'Transaction failed');
                             break;
                         }
                     } 
-                    await this.timeout(1000);
+                    await this.timeout(2000);
                 }
             },
             async play(valueProperty, value) {
@@ -262,9 +288,84 @@
                     } else {
                         this.showAlert('info', 'Transaction sent', `https://testnet.bscscan.com/tx/${result}`);
                         this.txnCount++
-                        await this.checkTransactionStatus(result);
+                        await this.checkTransactionStatus(result, 'game');
                     }
                 });
+            },
+            async playToken(valueProperty, value) {
+                const contract = new this.web3.eth.Contract(ABI.abi, this.contract);
+                const data = await contract.methods.createTokenGame(
+                    this.web3.utils.numberToHex(value * 10**18),
+                    valueProperty
+                );
+
+                const accounts = await this.wallet.getAccounts();
+
+                await this.web3.eth.sendTransaction({
+                    from: accounts[0],
+                    to: this.contract,
+                    value: null,
+                    gas: await data.estimateGas({ from: accounts[0] }),
+                    data: data.encodeABI()
+                }, async(error, result) => {
+                    if (error) {
+                        return this.showAlert('error', 'Error', error.message);
+                    } else {
+                        this.showAlert('info', 'Transaction sent', `https://testnet.bscscan.com/tx/${result}`);
+                        this.txnCount++
+                        await this.checkTransactionStatus(result, 'game');
+                    }
+                });
+            },
+            async approve(valueProperty, value) {
+                if (this.value == 0 || !this.valueProperty) {
+                    return this.showAlert('warning', 'Warning', 'Choose property and bet amount');
+                }
+
+                this.web3 = new Web3(window.web3.currentProvider);
+                const accounts = await this.wallet.getAccounts();
+                const contractToken = new this.web3.eth.Contract(abiToken, '0xeD24FC36d5Ee211Ea25A80239Fb8C4Cfd80f12Ee');
+
+                const allowance = await contractToken.methods.allowance(
+                    accounts[0],
+                    this.contract
+                ).call();
+
+
+                if (allowance < (value * 10**18)) {
+                    const dataApprove = await contractToken.methods.approve(
+                        this.contract,
+                        '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
+                    );
+
+                    await this.web3.eth.sendTransaction({
+                        from: accounts[0],
+                        to: '0xeD24FC36d5Ee211Ea25A80239Fb8C4Cfd80f12Ee',
+                        value: null,
+                        gas: await dataApprove.estimateGas({ from: accounts[0] }),
+                        data: dataApprove.encodeABI()
+                    }, async(error, result) => {
+                        if (error) {
+                            return this.showAlert('error', 'Error', error.message);
+                        } else {
+                            this.showAlert('info', 'Approve sent', `https://testnet.bscscan.com/tx/${result}`);
+                            this.txnCount++
+                            await this.checkTransactionStatus(result, 'approve');
+                        }
+                    });
+                }
+
+                while(true) {
+                    const allowance = await contractToken.methods.allowance(
+                        accounts[0],
+                        this.contract
+                    ).call();
+
+                    if (allowance > value * 10**18) {
+                        await this.playToken(valueProperty, value);
+                        break;
+                    }
+                }
             },
             endGame() {
                 this.gameLive = false;
@@ -378,5 +479,9 @@
     .button-endgame{
         display: block;
         margin: 0 auto;
+    }
+
+    .radio {
+
     }
 </style>
