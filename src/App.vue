@@ -62,7 +62,7 @@
     import { ConnectWalletButton, useMetaMaskWallet } from 'vue-connect-wallet'
     import { NSpace, NInputGroup, NSelect, NInputNumber, NButton, NAlert, NGrid, NGi, NAvatar, NRadioGroup, NRadio } from 'naive-ui'
     import { defineComponent, ref } from "vue";
-    import ABI from '/artifacts/contracts/RSPGame.sol/RSPGame.json'
+    import ABI from '../artifacts/contracts/RSPGame.sol/RSPGame.json'
     import { abiToken } from '/public/abiToken.js'
 
     export default defineComponent({
