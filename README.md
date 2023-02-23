@@ -1,32 +1,32 @@
 # Rock-Scissors-Paper Game dApp
       
-Этот проект является децентрализованной игрой камень-ножницы-бумага, которая работает на базе смарт-контракта на блокчейне Binance Smart Chain и принимает токен BUSD и BNB. В игре также заложена комиссия в 3%, которая направляется на улучшение дальнейшего развития проекта и честной игры. Для рандомизации исхода используется Chainlink VRF.     
+This project is a decentralized rock-paper-scissors game that runs on a smart contract on the Binance Smart Chain blockchain and accepts BUSD and BNB tokens. The game also includes a 3% commission that goes towards improving the further development of the project and ensuring fair play. Chainlink VRF is used for randomizing the outcome.   
      
-## Описание игры
-Игра состоит из двух участников - игрока и бота, игрок выбирает один из трех вариантов: камень, ножницы или бумага. Результат игры определяется по правилам:     
-        
-Камень побеждает ножницы (камень разбивает ножницы)      
-Ножницы побеждают бумагу (ножницы режут бумагу)      
-Бумага побеждает камень (бумага оборачивает камень)      
-Игрок, который побеждает, получает обратно свою ставку за вычетом комиссии 3%, а также ставку проигравшего участника.     
-Если участникам выпали одинаковые варианты, игрок получает обратно свою ставку за вычетом комиссии 3%.     
+## Game Description
+The game consists of two participants - a player and a bot. The player chooses one of three options: rock, scissors, or paper. The game's outcome is determined by the rules:
+
+Rock beats scissors (rock crushes scissors)
+Scissors beat paper (scissors cut paper)
+Paper beats rock (paper covers rock)
+
+The player who wins receives their stake back minus the 3% commission, as well as the stake of the losing participant. If the participants choose the same option, the player receives their stake back minus the 3% commission.   
      
-## Технические детали
-Результаты игры сохраняются на блокчейне, что обеспечивает прозрачность и надежность.      
+## Technical Details
+The game's results are saved on the blockchain, ensuring transparency and reliability.
 
-Игра написана на языке Solidity и запущена на блокчейне Binance Smart Chain. Для фронтенда использован Vue.js и Web3.js для взаимодействия с смарт-контрактом. Для разработки и тестирования смарт-контракта используется Hardhat и Remix IDE. Для рандомизации исхода игры используется Chainlink VRF (Verifiable Random Function), что обеспечивает высокий уровень доверия к игре и гарантирует честность для всех участников.
+The game is written in Solidity and launched on the Binance Smart Chain blockchain. Vue.js and Web3.js are used for the frontend to interact with the smart contract. Hardhat and Remix IDE are used for developing and testing the smart contract. Chainlink VRF (Verifiable Random Function) is used to randomize the game's outcome, ensuring a high level of trust in the game and guaranteeing fairness for all participants.
 
-## Запуск проекта
-1) Клонируйте репозиторий
+## Project Launch
+1) Clone the repository
 ```bash
 git clone https://github.com/d4rk4444/rsp-game.git
 ```
-2) Установите зависимости
+2) Install dependencies
 ```bash
 cd /rsp-game
 npm i
 ```
-3) Запустите проект
+3) Launch the project
 ```bash
 npm run dev
 ```
